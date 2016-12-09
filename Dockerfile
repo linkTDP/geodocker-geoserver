@@ -1,11 +1,17 @@
 FROM quay.io/geodocker/base:0.1
-
+ARG PROXY
+ENV http_proxy=$PROXY
+ENV https_proxy=$PROXY
+ENV HTTP_PROXY=$PROXY
+ENV HTTPS_PROXY=$PROXY
+#
 ENV ACCUMULO_VERSION 1.7.2
-ENV GEOSERVER_VERSION 2.9.0
-ENV GEOMESA_VERSION 1.2.5
+ENV GEOSERVER_VERSION 2.9.2
+ENV GEOMESA_VERSION 1.2.6
 ENV GEOWAVE_VERSION 0.9.3
-ENV TOMCAT_VERSION 8.0.35
+ENV TOMCAT_VERSION 8.5.8
 ENV CATALINA_OPTS "-Xmx4g -XX:MaxPermSize=512M -Duser.timezone=UTC -server -Djava.awt.headless=true"
+
 
 # Install tomcat
 RUN set -x \
@@ -29,7 +35,16 @@ RUN set -x \
   && unzip -j /tmp/geoserver-wps.zip -d /opt/tomcat/webapps/geoserver/WEB-INF/lib/ \
   && rm -rf /tmp/geoserver-wps.zip
 
-# Install geomesa specific geoserver jar
+#curl -S -L -o /tmp/geomesa-accumulo-distributed-runtime-${GEOMESA_VERSION}.tar.gz \
+#https://repo.locationtech.org/content/repositories/geomesa-releases/org/locationtech/geomesa/geomesa-dist/${GEOMESA_VERSION}/geomesa-dist-${GEOMESA_VERSION}-bin.tar.gz \
+#&&
+
+# # Install geomesa specific geoserver jar
+# COPY geomesa-dist-1.2.6-bin.tar.gz /tmp/geomesa-accumulo-distributed-runtime-${GEOMESA_VERSION}.tar.gz
+# RUN set -x \
+# && tar -C /tmp/geomesa-accumulo-distributed-runtime-${GEOMESA_VERSION} -zxvf /tmp/geomesa-accumulo-distributed-runtime-${GEOMESA_VERSION}.tar.gz
+# && COPY /tmp/geomesa-accumulo-distributed-runtime-${GEOMESA_VERSION}/geomesa-accumulo-distributed-runtime-${GEOMESA_VERSION}.jar /opt/tomcat/webapps/geoserver/WEB-INF/lib/
+
 COPY geomesa-accumulo-distributed-runtime-${GEOMESA_VERSION}.jar /opt/tomcat/webapps/geoserver/WEB-INF/lib/
 
 # Install jars for geomesa/geowave integration
@@ -50,6 +65,11 @@ RUN set -x \
 RUN set -x \
   && chown root /opt/tomcat/webapps/geoserver/WEB-INF/lib/* \
   && chgrp root /opt/tomcat/webapps/geoserver/WEB-INF/lib/*
+
+RUN unset http_proxy
+RUN unset https_proxy
+RUN unset HTTP_PROXY
+RUN unset HTTPS_PROXY
 
 COPY server.xml /opt/tomcat/conf/server.xml
 VOLUME ["/opt/tomcat/webapps/geoserver/data"]

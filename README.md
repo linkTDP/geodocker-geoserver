@@ -5,3 +5,11 @@
 [![Join the chat at https://gitter.im/geotrellis/geotrellis](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/geotrellis/geotrellis?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 GeoServer container for [GeoDocker Cluster](https://github.com/geodocker/geodocker) with GeoWave and GeoMesa plugins.
+
+It contains also the geomesa-accumulo-distributed-runtime-1.2.6.jar
+
+You can build this image also using a proxy:
+
+"""
+docker build . --build-arg PROXY=<your proxy> -t geoserver
+"""
