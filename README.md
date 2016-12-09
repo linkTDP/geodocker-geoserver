@@ -10,6 +10,6 @@ It contains also the geomesa-accumulo-distributed-runtime-1.2.6.jar
 
 You can build this image also using a proxy:
 
-"""
+```
 docker build . --build-arg PROXY=<your proxy> -t geoserver
-"""
+```
